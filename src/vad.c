@@ -100,37 +100,44 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
 
   switch (vad_data->state) {
   case ST_INIT:
-    vad_data->k1  = f.p + vad_data->alpha1-0.5;
-    vad_data->k2  = f.p + vad_data->alpha2 +7;
+    vad_data->k1  = f.p + vad_data->alpha1-0.5;  // -0.45
+    vad_data->k2  = f.p + vad_data->alpha2 +7.61;  // +7.5
     vad_data->state = ST_SILENCE;
     break;
 
   case ST_SILENCE:
     if (f.p > vad_data->k2)
-      vad_data->state = ST_VOICE;
-    else if (f.p > vad_data->k1)
       vad_data->state = ST_MBV;
+    else if (f.p > vad_data->k1){
+      vad_data->N_TRAMAS --;
+      vad_data->state = ST_MBS;}
     break;
 
   case ST_VOICE:
     if (f.p < vad_data->k1)
-      vad_data->state = ST_SILENCE;
-    else if (f.p < vad_data->k2)
       vad_data->state = ST_MBS;
+    else if (f.p < vad_data->k2)
+      vad_data->state = ST_MBV;
     break;
 
-  case ST_MBS:
-    if (f.p > vad_data->k2)
-      vad_data->state = ST_VOICE;
-    else if (f.p < vad_data->k1)
-      vad_data->state = ST_SILENCE;
-    break;
-  
   case ST_MBV:
     if (f.p > vad_data->k2)
       vad_data->state = ST_VOICE;
+    else if ((f.p < vad_data->k1) || (vad_data->N_TRAMAS == 0)){
+      vad_data->state = ST_SILENCE;
+      vad_data->N_TRAMAS = 3;}
+    else
+      vad_data->N_TRAMAS--;
+    break;
+  
+  case ST_MBS:
+    if ((f.p > vad_data->k2) || (vad_data->N_TRAMAS == 0)){
+      vad_data->state = ST_VOICE;
+      vad_data->N_TRAMAS = 3;}
     else if (f.p < vad_data->k1)
       vad_data->state = ST_SILENCE;
+    else
+      vad_data->N_TRAMAS--;
     break;
 
   case ST_UNDEF:
@@ -138,10 +145,10 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
   }
 
   if (vad_data->state == ST_SILENCE ||
-      vad_data->state == ST_MBS)
+      vad_data->state == ST_MBV)
     return ST_SILENCE;
   else if (vad_data->state == ST_VOICE ||
-      vad_data->state == ST_MBV)
+      vad_data->state == ST_MBS)
     return ST_VOICE;
   
   else
