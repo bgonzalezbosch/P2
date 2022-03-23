@@ -105,32 +105,60 @@ Ejercicios
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
 
+<img width="1366" alt="Etiqueta de los segmentos de voz y silencio" src="https://github.com/bgonzalezbosch/P2/blob/Bernat-Roger/wavesurfer1.png">
+
+EN la imagen se muestra la captura del audio pav_4151.wav donde hemos segmentado las partes de voz (v) y sulencio (s) en la transcripcion .lab. debajo podemos ver la tasa de cruces por cero, el contorno de portencia y por ultimo la forma de onda de la señal junto al eje temporal. 
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para
 	  estar seguros de que un segmento de señal se corresponde con voz.
 
+	Si nos fijamos en las gráficas, vemos como el incremento llega a más de 60 dB en el contorno de potencia respecto al silencio inicial.
+
 	* Duración mínima razonable de los segmentos de voz y silencio.
+
+	- Duración mínima de segmentos de voz: 2.83s
+	- Duración mínima de segmentos de silencio: 0.388s
 
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
 
+	sacamos tres conclusiones de detección: tenemos tasa alta de cruces para las consonantes sordas, tasa baja de cruces para detectar un tramo de voz y tasa media de cruces para un tramode silencio con ruido de fondo.
 
 ### Desarrollo del detector de actividad vocal
 
 - Complete el código de los ficheros de la práctica para implementar un detector de actividad vocal tan
   exacto como sea posible. Tome como objetivo la maximización de la puntuación-F `TOTAL`.
 
+El código definitivo se puede consultar en la carpeta src. 
+
 - Inserte una gráfica en la que se vea con claridad la señal temporal, el etiquetado manual y la detección
   automática conseguida para el fichero grabado al efecto. 
 
+<img width="1366" alt="wavesurfer con vad y lab" src="https://github.com/bgonzalezbosch/P2/blob/Bernat-Roger/wavesurfer2.png"> 
 
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
+
+Existen grandes diferencias entre los dos etiquetados. Principamentne vemos como vad es mucho más preciso en cuanto a reconocimiento de voz acotando de forma más estricta la voz y el silencio. Se puede apreciar en la forma de onda como en tramos hay silencio muy corto en tiempo y lab lo ignora no como vad que lo tiene en cuenta. Esto es consecuencia de los umbrales que hemos considerado para realizar el detector de voz.
+
+Para profundizar en los resultados, la siguiente imagen nos muestra los valores de la tasa de recall que obtenemos tanto para la voz (96.24%) como para el silencio (90.69%). Tambien se nos muestra la precisión de deteción de la voz (95.82%) y del silencio (91.59%). Finalemnte, sus resoectivos F_score son de 96.15% para la voz y 91.41% para el silencio. Lo que nos da una media de 93.75%, un valor muy cernano a 100%, valor que seria el ideal.
+
+<img width="826" alt="precission recall y f_score del fichero pav_4151" src="https://github.com/bgonzalezbosch/P2/blob/Bernat-Roger/vad_evaluation.png">
 
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
   el resumen).
 
+<img width="824" alt="wprecission recall y f_score de db.v4" src="https://github.com/bgonzalezbosch/P2/blob/Bernat-Roger/summary.png">
+
+ejecutando y analizando con nuestro sistema de detección la bateria de ficheros que se encuentran en la carpeta db.v4, hemos obtenido los siguietes valores del sumario:
+
+VOZ			Recall:	86.26%		Precision: 96.15%		F_score: 88.07%
+SILENCIO	Recall:	95.12%		Precision: 83.06%		F_score: 85.22%
+
+Lo que nos da un total de 86.63%
+
+Vistos los resultados, podemos determinar que son bastante buenos aun que no tan cercanos al anterior caso que hemos visto. Es normal, en este caso evaluamos muchos más ficheros y entre ellos hay mucha disparidad. En algunos caos nos hemos acercad mucho (más de 98%) como en el caso del fichero "pav_4121" pero en otros no hemos acertado tanto como por ejempplo "pav_4172.lab" con cerca de un 61%. Es mejorable sin duda pero en lineas generales obr¡tenemos una F_score cercana al 87% que es bastante alta.
 
 ### Trabajos de ampliación
 
@@ -139,6 +167,10 @@ Ejercicios
 - Si ha desarrollado el algoritmo para la cancelación de los segmentos de silencio, inserte una gráfica en
   la que se vea con claridad la señal antes y después de la cancelación (puede que `wavesurfer` no sea la
   mejor opción para esto, ya que no es capaz de visualizar varias señales al mismo tiempo).
+
+  Hmos hecho una captura donde se muestran dos ventantas de wavesurfer. En la ventana superior se ve la form de onda original y se aprecia claramente el ruido en los segmentos de sielncio. En la inferior vemos como el sonido introducido queda cancelado y desaparece.
+
+  <img width="1352" alt="pav_4151 sin ruido en los segmentos de silencio" src="https://github.com/bgonzalezbosch/P2/blob/Bernat-Roger/no_noise.png">
 
 #### Gestión de las opciones del programa usando `docopt_c`
 
@@ -154,6 +186,7 @@ Ejercicios
 - Si lo desea, puede realizar también algún comentario acerca de la realización de la práctica que
   considere de interés de cara a su evaluación.
 
+Queriamos destacar que el uso de la plataforma GitHub nos ha facilitado bastante el trabajo. Al ser la primera vez, nos ha costado un poco acostumbrarnos a dicha herramienta, sobretodo en los procesos de subida y actualización de ficheros. Hemos tradao un poco en configurarlo y aprender a usar github y nos ha retrasado un poco. Para la siguiente entrega ya lo tendremos por la mano.
 
 ### Antes de entregar la práctica
 
